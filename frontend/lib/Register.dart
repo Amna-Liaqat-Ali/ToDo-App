@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:login_page/SignInPage.dart';
+
+class Register extends StatefulWidget {
+  const Register({super.key});
+
+  @override
+  State<Register> createState() => RegisterState();
+}
+
+class RegisterState extends State<Register> {
+  void signIn() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => SignInPage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.blue, Colors.white],
+            ),
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Register',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: "Email",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: TextField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: "Password",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text("Register"),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Text("Already have an account?"),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: TextButton(
+                      onPressed: () {
+                        signIn();
+                      },
+                      child: Text("Sign in"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
