@@ -1,9 +1,11 @@
 const UserService = require('../services/user.services');
 
 // Handles request/response from frontend
+
+//regsiter user
 exports.register = async (req, res) => {
   try {
-       console.log("Request Body:", req.body);
+       console.log("Request Body:", req.body);  //for checking
     const { email, password } = req.body;
 
 
@@ -29,4 +31,35 @@ exports.register = async (req, res) => {
     console.log(err);
     return res.status(500).json({ status:false,error: err.message });
   }
+};
+
+//login
+exports.login = async (req, res) => {
+ try {
+     const { email, password } = req.body;
+     const user=await UserService.findByEmail(email);
+
+     if(!user){
+      throw new Error("User doesn't exist!");
+     }
+     const isMatch=await user.comparePassword(password);
+
+     if(isMatch==false){
+            throw new Error("Invalid Password!");
+     }
+
+     let tokenData={_id:user._id,email:user.email};
+
+     const token=await UserService.generateToken(tokenData,"secretKey",'1h');
+
+     res.status(200).json({status:true,token:token});
+
+
+   }
+ catch (error) {
+  throw error;
+  
+ }
+
+
 };
