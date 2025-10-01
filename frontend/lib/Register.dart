@@ -26,29 +26,34 @@ class RegisterState extends State<Register> {
         "email": emailController.text,
         "password": passwordController.text,
       };
-      //sending through post api to our localhost(regsiter)
-      var response = await http.post(Uri.parse(regsiter));
-      //what kind of data sendind to backend
-      headers:
-      <String, String>{
-        'Content-Type': 'application/json', // MUST be string
-      };
-      // convert map to JSON string(bcz object direcly can't be send)
-      body:
-      jsonEncode(regBody);
 
-      //decode json
-      var jsonResponse = jsonDecode(response.body);
-
-      print(jsonResponse(['status']));
-
-      if (jsonResponse(['status'])) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SignInPage()),
+      try {
+        //sending through post api to our localhost(regsiter)
+        var response = await http.post(
+          Uri.parse(regsiter), // example: "http://10.0.2.2:3000/register"
+          //what kind of data sendind to backend
+          headers: {
+            "Content-Type": "application/json", // must be inside http.post()
+          },
+          // convert map to JSON string(bcz object direcly can't be send)
+          body: jsonEncode(regBody), // convert map -> JSON string
         );
-      } else {
-        print("something went wrong");
+
+        print("STATUS: ${response.statusCode}");
+        print("BODY: ${response.body}");
+
+        var jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == true) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignInPage()),
+          );
+        } else {
+          print("Something went wrong");
+        }
+      } catch (e) {
+        print("Error: $e");
       }
     } else {
       setState(() {

@@ -1,10 +1,14 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const userRouter = require('./routers/user.router');
+
 const app = express();
 
-// Parse JSON from request
+//body parser used to read files
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const userRouter = require('./routers/user.router');
+// defines Routes
 app.use('/', userRouter);
 
 module.exports = app;
