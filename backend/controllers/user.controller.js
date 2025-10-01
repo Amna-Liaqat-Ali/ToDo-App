@@ -20,12 +20,13 @@ exports.register = async (req, res) => {
 
     const user = await UserService.registerUser({ email, password });
     return res.status(201).json({
+      status:true,
       message: "User registered successfully!",
       data: user
     });
 
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ status:false,error: err.message });
   }
 };

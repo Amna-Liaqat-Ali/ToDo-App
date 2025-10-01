@@ -30,7 +30,7 @@ class RegisterState extends State<Register> {
       try {
         //sending through post api to our localhost(regsiter)
         var response = await http.post(
-          Uri.parse(regsiter), // example: "http://10.0.2.2:3000/register"
+          Uri.parse(regsiter),
           //what kind of data sendind to backend
           headers: {
             "Content-Type": "application/json", // must be inside http.post()
