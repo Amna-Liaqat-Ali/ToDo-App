@@ -3,7 +3,14 @@ const UserService = require('../services/user.services');
 // Handles request/response from frontend
 exports.register = async (req, res) => {
   try {
+       console.log("Request Body:", req.body);
     const { email, password } = req.body;
+
+
+    if (!email || !password) {
+      console.log("Missing email or password"); // log missing fields
+      return res.status(400).json({ msg: "Email or password missing" });
+    }
 
     // check if user already exists
     const existingUser = await UserService.findByEmail(email);
@@ -18,6 +25,7 @@ exports.register = async (req, res) => {
     });
 
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ error: err.message });
   }
 };

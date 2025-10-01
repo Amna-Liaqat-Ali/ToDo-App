@@ -1,13 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const userRouter = require('./routers/user.router');
-
 const app = express();
 
-//body parser used to read files
-app.use(bodyParser.json());
+// Parse JSON from request
+app.use(express.json());
 
-// defines Routes
-app.use('/api/users', userRouter);
+const userRouter = require('./routers/user.router');
+app.use('/', userRouter);
 
 module.exports = app;
