@@ -1,42 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:login_page/SignInPage.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  //accepts token from login page
+  final token;
+  const Dashboard({@required this.token, super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  void SignOut() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => SignInPage()),
-    );
+  late String email;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
+    email = jwtDecodedToken['email'];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Dashboard",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Congrulations,Our app is working",
-              style: TextStyle(fontSize: 15),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: () => SignOut(), child: Text("Sign Out")),
-          ],
+          children: [Text(email)],
         ),
       ),
     );

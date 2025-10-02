@@ -39,9 +39,6 @@ class RegisterState extends State<Register> {
           body: jsonEncode(regBody), // convert map -> JSON string
         );
 
-        print("STATUS: ${response.statusCode}");
-        print("BODY: ${response.body}");
-
         var jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['status'] == true) {
@@ -97,7 +94,7 @@ class RegisterState extends State<Register> {
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: TextField(
                       controller: emailController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         hintText: "Email",
                         errorText: _isValid ? "Enter required field" : null,
@@ -112,7 +109,7 @@ class RegisterState extends State<Register> {
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: TextField(
                       controller: passwordController,
-                      keyboardType: TextInputType.visiblePassword,
+                      keyboardType: TextInputType.text,
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText: "Password",

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:login_page/DashBoard.dart';
-import 'package:login_page/Register.dart';
+import 'package:login_page/SignInPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -9,12 +9,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //stores data as tokens
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(tokens: prefs.getString('token'))); //used to get token from app
+  runApp(MyApp(token: prefs.getString('token'))); //used to get token from app
 }
 
 class MyApp extends StatelessWidget {
-  final tokens;
-  const MyApp({Key? key, this.tokens}) : super(key: key);
+  final token;
+  const MyApp({Key? key, @required this.token}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +24,10 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: (tokens != null && JwtDecoder.isExpired(tokens) == false)
-          ? Dashboard()
-          : Register(),
+      //if token is expired send user back to login page otherwise dashboard
+      home: (token != null && JwtDecoder.isExpired(token) == false)
+          ? Dashboard(token: token)
+          : SignInPage(),
     );
   }
 }
