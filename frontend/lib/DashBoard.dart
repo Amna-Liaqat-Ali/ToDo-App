@@ -21,17 +21,41 @@ class _DashboardState extends State<Dashboard> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
 
+  //generating list in frontend
+  List items = [];
+
   @override
   void initState() {
     super.initState();
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
     userId = jwtDecodedToken['_id'];
+    getToDoList(userId);
+  }
+
+  //get all to do lists in app
+  void getToDoList(userId) async {
+    var regBody = {
+      "userId": userId,
+      "title": titleController.text,
+      "desc": descController.text,
+    };
+
+    try {
+      var response = await http.post(
+        Uri.parse(getList),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(regBody),
+      );
+      var jsonResponse = jsonDecode(response.body);
+      items = jsonResponse['success'];
+    } catch (e) {
+      print("Error: $e");
+    }
   }
 
   //takes data from fields nd send back to backend
   void AddToDo() async {
     if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
-      //object for passing data in backend
       var regBody = {
         "userId": userId,
         "title": titleController.text,
@@ -39,19 +63,12 @@ class _DashboardState extends State<Dashboard> {
       };
 
       try {
-        //sending through post api to our localhost(regsiter)
         var response = await http.post(
           Uri.parse(addToDo),
-          //what kind of data sendind to backend
-          headers: {
-            "Content-Type": "application/json", // must be inside http.post()
-          },
-          // convert map to JSON string(bcz object direcly can't be send)
-          body: jsonEncode(regBody), // convert map -> JSON string
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody),
         );
         var jsonResponse = jsonDecode(response.body);
-
-        print(jsonResponse['status']);
 
         if (jsonResponse['status']) {
           titleController.clear();
@@ -90,14 +107,12 @@ class _DashboardState extends State<Dashboard> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // close dialog
+                Navigator.pop(context);
               },
               child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () {
-                String title = titleController.text.trim();
-                String desc = descController.text.trim();
                 AddToDo();
               },
               child: const Text("Add"),
@@ -111,14 +126,97 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Welcome: $userId")],
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        elevation: 4,
+        centerTitle: true,
+        title: const Padding(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            "ToDo with NodeJS + MongoDB",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
         ),
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          Text(
+            "Welcome: $userId",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          Text(
+            "${items.length} Task",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  key: Key(items[index]),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.redAccent,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (direction) {
+                    setState(() {
+                      items.removeAt(index);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Item deleted")),
+                    );
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.check_box_outline_blank,
+                        color: Colors.teal,
+                      ),
+                      title: Text(
+                        '${items![index]['title']}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Text(
+                        '${items![index]['desc']}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTodoDialog,
+        backgroundColor: Colors.blue,
         child: const Icon(Icons.add),
       ),
     );
