@@ -22,3 +22,16 @@ exports.getToDoList = async (req, res, next) => {
         throw error;
     }
 }
+
+
+exports.deleteToDo = async (req, res, next) => {
+    try {
+        const { id } = req.body;
+        const deleted = await ToDoService.deleteToDo({ id });
+        res.json({status:true, success:deleted});
+    } catch (error) {
+        throw error;
+    }
+}
+
+

@@ -3,3 +3,4 @@ final regsiter = url + 'register';
 final login = url + 'login';
 final addToDo = url + 'createToDo';
 final getList = url + 'getToDoList';
+final deleteList = url + 'deleteToDo';

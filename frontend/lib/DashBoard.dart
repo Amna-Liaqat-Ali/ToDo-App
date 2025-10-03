@@ -86,6 +86,26 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  //deletes item using particular id
+  Future<void> deleteItem(String id) async {
+    try {
+      var response = await http.delete(
+        Uri.parse(deleteList),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"id": id}),
+      );
+
+      var jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['status'] == true) {
+        getToDoList(userId); // refresh the list
+      } else {
+        print("Failed to delete item: ${jsonResponse['message']}");
+      }
+    } catch (e) {
+      print("Error deleting item: $e");
+    }
+  }
+
   // Function to show Add To-Do dialog
   void _showAddTodoDialog() {
     showDialog(
@@ -177,6 +197,10 @@ class _DashboardState extends State<Dashboard> {
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   onDismissed: (direction) {
+                    String id = items[index]['_id']
+                        .toString(); // get the item ID
+                    //call delete function
+                    deleteItem(id);
                     setState(() {
                       items.removeAt(index);
                     });
