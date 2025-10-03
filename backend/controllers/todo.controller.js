@@ -15,13 +15,10 @@ exports.createToDo = async (req, res, next) => {
 
 exports.getToDoList = async (req, res, next) => {
     try {
-        const { userId} = req.body;
-        const todo = await ToDoService.getToDoList({userId});
-
-        res.json({status:true,success:todo});
-
+        const { userId } = req.query;
+        const todo = await ToDoService.getToDoList({ userId });
+        res.json({status:true, success:todo});
     } catch (error) {
         throw error;
     }
-
 }

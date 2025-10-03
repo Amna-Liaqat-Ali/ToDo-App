@@ -34,20 +34,20 @@ class _DashboardState extends State<Dashboard> {
 
   //get all to do lists in app
   void getToDoList(userId) async {
-    var regBody = {
-      "userId": userId,
-      "title": titleController.text,
-      "desc": descController.text,
-    };
-
     try {
-      var response = await http.post(
-        Uri.parse(getList),
+      var response = await http.get(
+        Uri.parse("$getList?userId=$userId"),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode(regBody),
       );
       var jsonResponse = jsonDecode(response.body);
-      items = jsonResponse['success'];
+
+      if (jsonResponse['status']) {
+        setState(() {
+          items = List<Map<String, dynamic>>.from(jsonResponse['success']);
+        });
+      } else {
+        print("failed to fetch the list");
+      }
     } catch (e) {
       print("Error: $e");
     }
@@ -74,6 +74,9 @@ class _DashboardState extends State<Dashboard> {
           titleController.clear();
           descController.clear();
           Navigator.pop(context);
+
+          /// refresh list immediately
+          getToDoList(userId);
         } else {
           print('Something went wrong');
         }
@@ -163,7 +166,9 @@ class _DashboardState extends State<Dashboard> {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 return Dismissible(
-                  key: Key(items[index]),
+                  key: Key(
+                    items[index]['_id'].toString(),
+                  ), // use unique ID from DB
                   direction: DismissDirection.endToStart,
                   background: Container(
                     color: Colors.redAccent,
@@ -194,11 +199,11 @@ class _DashboardState extends State<Dashboard> {
                         color: Colors.teal,
                       ),
                       title: Text(
-                        '${items![index]['title']}',
+                        items[index]['title'] ?? '',
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(
-                        '${items![index]['desc']}',
+                        items[index]['desc'] ?? '',
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       trailing: const Icon(
