@@ -27,7 +27,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    //conevrts into json format(MAP)
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
+    //extract id from it
     userId = jwtDecodedToken['_id'];
     getToDoList(userId);
   }
@@ -36,6 +38,7 @@ class _DashboardState extends State<Dashboard> {
   void getToDoList(userId) async {
     try {
       var response = await http.get(
+        //builds full API URL with id!
         Uri.parse("$getList?userId=$userId"),
         headers: {"Content-Type": "application/json"},
       );
@@ -43,6 +46,7 @@ class _DashboardState extends State<Dashboard> {
 
       if (jsonResponse['status']) {
         setState(() {
+          //converts items to list of map with key value pair
           items = List<Map<String, dynamic>>.from(jsonResponse['success']);
         });
       } else {
@@ -220,7 +224,7 @@ class _DashboardState extends State<Dashboard> {
                     child: ListTile(
                       leading: const Icon(
                         Icons.check_box_outline_blank,
-                        color: Colors.teal,
+                        color: Colors.blue,
                       ),
                       title: Text(
                         items[index]['title'] ?? '',
